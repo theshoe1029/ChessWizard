@@ -30,7 +30,7 @@ import java.util.UUID;
 
 @Controller
 public class ChessWizardController {
-    private static final long TIMEOUT = 60_000;
+    private static final long TIMEOUT = 600_000;
     private int[] record = getRecord();
     private static Map<String, Game> games = new HashMap<>();
 

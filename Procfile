@@ -1,1 +1,1 @@
-web: java -D server.port=6638 $JAVA_OPTS -jar target/ChessWizard-1.0-SNAPSHOT.jar server
+web: java -jar target/ChessWizard-1.0-SNAPSHOT.jar server

@@ -5,7 +5,6 @@ import com.adamschueller.chesswizard.engine.Engine;
 import com.adamschueller.chesswizard.engine.move.Castle;
 import com.adamschueller.chesswizard.engine.move.Move;
 import com.adamschueller.chesswizard.engine.move.Promotion;
-import com.adamschueller.chesswizard.engine.pieces.Color;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import org.springframework.boot.jackson.JsonComponent;
@@ -19,15 +18,20 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.server.ResponseStatusException;
 import org.springframework.web.servlet.ModelAndView;
 
+import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Scanner;
 import java.util.UUID;
 
 @Controller
 public class ChessWizardController {
     private static final long TIMEOUT = 60_000;
+    private int[] record = getRecord();
     private static Map<String, Game> games = new HashMap<>();
 
     public static void clearInactiveGames() {
@@ -52,18 +56,18 @@ public class ChessWizardController {
     @RequestMapping(value="/start", method=RequestMethod.POST)
     public StartResponse start() {
         UUID uuid = UUID.randomUUID();
-        Game game = new Game();
+        Game game = new Game(record);
         games.put(uuid.toString(), game);
         System.out.println(uuid.toString() + " connected");
-        return new StartResponse(uuid, game.engine.board, game.playerColor);
+        return new StartResponse(uuid, game);
     }
 
     @ResponseBody
     @RequestMapping(value="/restart", method=RequestMethod.POST)
     public RestartResponse restart(@RequestBody RestartRequest restartRequest) {
-        Game game = new Game();
+        Game game = new Game(record);
         games.replace(restartRequest.uuid, game);
-        return new RestartResponse(game.engine.board, game.playerColor);
+        return new RestartResponse(game);
     }
 
     @ResponseBody
@@ -72,7 +76,7 @@ public class ChessWizardController {
         try {
             Game game = games.get(getRequest.uuid);
             synchronized (game) {
-                return new GetResponse(game.engine.board, game.playerColor);
+                return new GetResponse(game);
             }
         }
         catch (NullPointerException exc) {
@@ -104,14 +108,20 @@ public class ChessWizardController {
     public MoveResponse move(@RequestBody MoveRequest moveRequest) {
         try {
             Move move;
-            Board board = games.get(moveRequest.uuid).engine.board;
+            Game game = games.get(moveRequest.uuid);
+            Board board = game.engine.board;
 
             if (moveRequest.move.length() == 5) move = new Promotion(moveRequest.move);
             else if (board.isCastle(moveRequest.move)) move = new Castle(moveRequest.move);
             else move = new Move(moveRequest.move);
             board.move(move);
             board.updateGameOver();
-            return new MoveResponse(board);
+            try { if (board.isGameOver()) updateRecord(game); }
+            catch (IOException exc) {
+                System.out.println("Could not update record.txt");
+                return new MoveResponse(game);
+            }
+            return new MoveResponse(game);
         }
         catch (NullPointerException exc) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST,
@@ -130,7 +140,12 @@ public class ChessWizardController {
             synchronized (game) {
                 board.move(engine.getBestMove(false));
                 board.updateGameOver();
-                return new GoResponse(board);
+                try { if (board.isGameOver()) updateRecord(game); }
+                catch (IOException exc) {
+                    System.out.println("Could not update record.txt");
+                    return new GoResponse(game);
+                }
+                return new GoResponse(game);
             }
         }
         catch (NullPointerException exc) {
@@ -154,8 +169,7 @@ public class ChessWizardController {
     @AllArgsConstructor
     static class StartResponse {
         @Getter UUID uuid;
-        @Getter Board board;
-        @Getter Color playerColor;
+        @Getter Game game;
     }
 
     @JsonComponent
@@ -165,8 +179,7 @@ public class ChessWizardController {
 
     @AllArgsConstructor
     static class RestartResponse {
-        @Getter Board board;
-        @Getter Color playerColor;
+        @Getter Game game;
     }
 
     @JsonComponent
@@ -176,8 +189,7 @@ public class ChessWizardController {
 
     @AllArgsConstructor
     static class GetResponse {
-        @Getter Board board;
-        @Getter Color playerColor;
+        @Getter Game game;
     }
 
     @JsonComponent
@@ -188,7 +200,7 @@ public class ChessWizardController {
 
     @AllArgsConstructor
     static class MoveResponse {
-        @Getter Board board;
+        @Getter Game game;
     }
 
     @JsonComponent
@@ -198,6 +210,42 @@ public class ChessWizardController {
 
     @AllArgsConstructor
     static class GoResponse {
-        @Getter Board board;
+        @Getter Game game;
+    }
+
+    private int[] getRecord() {
+        int wins = 0;
+        int losses = 0;
+        File record = new File("./record.txt");
+        try {
+            Scanner recordScanner = new Scanner(record);
+            while (recordScanner.hasNextLine()) {
+                String data = recordScanner.nextLine();
+                String[] winsAndLosses = data.split("-");
+                wins = Integer.parseInt(winsAndLosses[0]);
+                losses = Integer.parseInt(winsAndLosses[1]);
+            }
+            recordScanner.close();
+        } catch (IOException exc) {
+            System.out.println(exc);
+            System.out.println("Could not read record.txt");
+        }
+        return new int[]{wins, losses};
+    }
+
+    private void updateRecord(Game game) throws IOException {
+        int wins = this.record[0];
+        int losses = this.record[1];
+
+        if (game.engine.board.getTurn().equals(game.playerColor)) wins++;
+        else losses++;
+
+        this.record[0] = wins;
+        this.record[1] = losses;
+
+        String strRecord = wins + "-" + losses;
+        FileWriter recordWriter = new FileWriter("./record.txt");
+        recordWriter.write(strRecord);
+        recordWriter.close();
     }
 }

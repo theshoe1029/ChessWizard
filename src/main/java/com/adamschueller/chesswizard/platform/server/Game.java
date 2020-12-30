@@ -7,4 +7,9 @@ public class Game {
     public long lastMove = System.currentTimeMillis();
     public Engine engine = new Engine();
     public Color playerColor = Color.randomColor();
+    public int[] record;
+
+    public Game(int[] record) {
+        this.record = record;
+    }
 }

@@ -64,7 +64,8 @@ function resetGraphics() {
     retry.style.display = "none";
 }
 
-function updateBoard(serverBoard) {
+function updateBoard(game) {
+    const serverBoard = game.engine.board;
     board = _.map(serverBoard.state, row => _.map(row, piece => piece.notation));
     drawBoard();
 
@@ -90,12 +91,17 @@ function updateTurn(serverBoard) {
     turn = serverBoard.turn;
 }
 
-function updateBoardColor(color) {
+function updateBoardColor(game) {
+    const color = game.playerColor;
     if (color === "WHITE") playerWhiteBoard();
     else {
         playerBlackBoard();
         botMove();
     }
+}
+
+function updateRecord(game) {
+    console.log(game.record);
 }
 
 function playerWhiteBoard() {
@@ -332,8 +338,9 @@ function startGame() {
             handleServerConnect();
             setCookie("uuid", res.data.uuid, 1);
             resetGraphics();
-            updateBoardColor(res.data.playerColor);
-            updateBoard(res.data.board);
+            updateBoardColor(res.data.game);
+            updateBoard(res.data.game);
+            updateRecord(res.data.game);
         }).catch(getErrHandler(startGame));
 }
 
@@ -349,8 +356,9 @@ function restartGame() {
             handleServerConnect();
             gameOver = false;
             resetGraphics();
-            updateBoardColor(res.data.playerColor);
-            updateBoard(res.data.board);
+            updateBoardColor(res.data.game);
+            updateBoard(res.data.game);
+            updateRecord(res.data.game);
         }).catch(getErrHandler(restartGame));
 }
 
@@ -368,8 +376,9 @@ function getGame() {
             thinkingLabel.style.display = "none";
             clearInterval(dots);
             resetGraphics();
-            updateBoardColor(res.data.playerColor);
-            updateBoard(res.data.board);
+            updateBoardColor(res.data.game);
+            updateBoard(res.data.game);
+            updateRecord(res.data.game);
         }).catch(getErrHandler(getGame));
 }
 
@@ -407,7 +416,8 @@ function playerMove() {
     })
         .then(res => {
             handleServerConnect();
-            updateBoard(res.data.board);
+            updateBoard(res.data.game);
+            updateRecord(res.data.game);
             clearStartPos();
             if (!PVP_MODE) botMove();
         }).catch(getErrHandler(playerMove));
@@ -428,7 +438,8 @@ function botMove() {
             thinkingLabel.style.display = "none";
             clearInterval(dots);
             botTurn = false;
-            updateBoard(res.data.board);
+            updateBoard(res.data.game);
+            updateRecord(res.data.game);
         }).catch(getErrHandler(botMove));
 }
 

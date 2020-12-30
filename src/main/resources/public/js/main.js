@@ -33,7 +33,13 @@ var startPos = null;
 var endPos = null;
 var promotion = "";
 
+window.onresize = function(){ location.reload(); }
+
 $(document).ready(function () {
+    if ($(window).width() <= 600) {
+        var cw = $('.chessboard').width();
+        $('.chessboard').css({'height':cw+'px'});
+    }
     setupDeselect();
     resetGraphics();
     if (getCookie("uuid") === "") startGame();

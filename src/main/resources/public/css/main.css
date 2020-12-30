@@ -1,0 +1,96 @@
+@font-face {
+    font-family: 'VCR';
+    src: url('vcr-font-webfont.eot');
+    src: url('vcr-font-webfont.eot?#iefix') format('embedded-opentype'),
+         url('vcr-font-webfont.woff2') format('woff2'),
+         url('vcr-font-webfont.woff') format('woff'),
+         url('vcr-font-webfont.svg#vcr_osd_monoregular') format('svg');
+    font-weight: normal;
+    font-style: normal;
+}
+
+h1, h2, h3, h4 {
+	margin: 0;
+	text-align: center;
+	font-family: VCR,Courier New,Courier,Lucida Sans Typewriter,Lucida Typewriter,monospace;
+	font-weight: normal;
+	font-style: normal;
+	font-size: 14pt;
+}
+
+.chessboard {	
+    width: 640px;
+    height: 640px;
+    margin: 20px;
+    border: 1px solid #333;
+    margin: auto;
+}
+.black {
+    float: left;
+    width: 80px;
+    height: 80px;
+    background-color: #ababab;
+    font-size:50px;
+    text-align:center;
+    display: table-cell;
+    vertical-align: middle;
+}
+.white {
+    float: left;
+    width: 80px;
+    height: 80px;
+    background-color: #fff;
+    font-size:50px;
+    text-align:center;
+    display: table-cell;
+    vertical-align: middle;
+}
+
+.upgrades{
+	width: 320px;
+	margin: auto;	
+}
+.selection{
+	float: center;
+	width: 80px;
+	height: 50px;
+	font-size: 35px;
+	text-align: center;
+	display: table-cell;
+	vertical-align: middle;
+	cursor: pointer;
+}
+
+.descriptions{
+	width: 320px;
+	margin: auto;
+}
+
+.description{
+	font-family: VCR,Courier New,Courier,Lucida Sans Typewriter,Lucida Typewriter,monospace;
+	color: #ababab;
+	float: left;
+    width: 80px;
+    height: 80px;
+    font-size:14px;
+    text-align:center;
+    display: table-cell;
+    vertical-align:middle;
+}
+
+#turnLabel {
+    margin-top: 15px;
+}
+
+h1, #thinkingLabel, #turnLabel {
+	color: #ababab;
+}
+
+#alertLabel {
+	color: #ff0000;
+}
+
+#restart{
+	color: #ababab;
+	cursor: pointer;
+}

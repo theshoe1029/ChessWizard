@@ -1,0 +1,112 @@
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <link rel="icon" href="favicon.png"/>
+    <link rel="stylesheet" href="css/main.css"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <meta charset="UTF-8">
+    <title>Chess</title>
+</head>
+
+<body id="body">
+    <h1 id="header">CHESS</h1>
+    <p id="game"></p>
+
+    <div class="chessboard" id="chessboard">
+        <!-- 1st -->
+        <div onclick="clicked(this)" onmouseover="setCursor(this)" class="white" id="a8"></div>
+        <div onclick="clicked(this)" onmouseover="setCursor(this)" class="black" id="b8"></div>
+        <div onclick="clicked(this)" onmouseover="setCursor(this)" class="white" id="c8"></div>
+        <div onclick="clicked(this)" onmouseover="setCursor(this)" class="black" id="d8"></div>
+        <div onclick="clicked(this)" onmouseover="setCursor(this)" class="white" id="e8"></div>
+        <div onclick="clicked(this)" onmouseover="setCursor(this)" class="black" id="f8"></div>
+        <div onclick="clicked(this)" onmouseover="setCursor(this)" class="white" id="g8"></div>
+        <div onclick="clicked(this)" onmouseover="setCursor(this)" class="black" id="h8"></div>
+        <!-- 2nd -->
+        <div onclick="clicked(this)" onmouseover="setCursor(this)" class="black" id="a7"></div>
+        <div onclick="clicked(this)" onmouseover="setCursor(this)" class="white" id="b7"></div>
+        <div onclick="clicked(this)" onmouseover="setCursor(this)" class="black" id="c7"></div>
+        <div onclick="clicked(this)" onmouseover="setCursor(this)" class="white" id="d7"></div>
+        <div onclick="clicked(this)" onmouseover="setCursor(this)" class="black" id="e7"></div>
+        <div onclick="clicked(this)" onmouseover="setCursor(this)" class="white" id="f7"></div>
+        <div onclick="clicked(this)" onmouseover="setCursor(this)" class="black" id="g7"></div>
+        <div onclick="clicked(this)" onmouseover="setCursor(this)" class="white" id="h7"></div>
+        <!-- 3th -->
+        <div onclick="clicked(this)" onmouseover="setCursor(this)" class="white" id="a6"></div>
+        <div onclick="clicked(this)" onmouseover="setCursor(this)" class="black" id="b6"></div>
+        <div onclick="clicked(this)" onmouseover="setCursor(this)" class="white" id="c6"></div>
+        <div onclick="clicked(this)" onmouseover="setCursor(this)" class="black" id="d6"></div>
+        <div onclick="clicked(this)" onmouseover="setCursor(this)" class="white" id="e6"></div>
+        <div onclick="clicked(this)" onmouseover="setCursor(this)" class="black" id="f6"></div>
+        <div onclick="clicked(this)" onmouseover="setCursor(this)" class="white" id="g6"></div>
+        <div onclick="clicked(this)" onmouseover="setCursor(this)" class="black" id="h6"></div>
+        <!-- 4st -->
+        <div onclick="clicked(this)" onmouseover="setCursor(this)" class="black" id="a5"></div>
+        <div onclick="clicked(this)" onmouseover="setCursor(this)" class="white" id="b5"></div>
+        <div onclick="clicked(this)" onmouseover="setCursor(this)" class="black" id="c5"></div>
+        <div onclick="clicked(this)" onmouseover="setCursor(this)" class="white" id="d5"></div>
+        <div onclick="clicked(this)" onmouseover="setCursor(this)" class="black" id="e5"></div>
+        <div onclick="clicked(this)" onmouseover="setCursor(this)" class="white" id="f5"></div>
+        <div onclick="clicked(this)" onmouseover="setCursor(this)" class="black" id="g5"></div>
+        <div onclick="clicked(this)" onmouseover="setCursor(this)" class="white" id="h5"></div>
+        <!-- 5th -->
+        <div onclick="clicked(this)" onmouseover="setCursor(this)" class="white" id="a4"></div>
+        <div onclick="clicked(this)" onmouseover="setCursor(this)" class="black" id="b4"></div>
+        <div onclick="clicked(this)" onmouseover="setCursor(this)" class="white" id="c4"></div>
+        <div onclick="clicked(this)" onmouseover="setCursor(this)" class="black" id="d4"></div>
+        <div onclick="clicked(this)" onmouseover="setCursor(this)" class="white" id="e4"></div>
+        <div onclick="clicked(this)" onmouseover="setCursor(this)" class="black" id="f4"></div>
+        <div onclick="clicked(this)" onmouseover="setCursor(this)" class="white" id="g4"></div>
+        <div onclick="clicked(this)" onmouseover="setCursor(this)" class="black" id="h4"></div>
+        <!-- 6th -->
+        <div onclick="clicked(this)" onmouseover="setCursor(this)" class="black" id="a3"></div>
+        <div onclick="clicked(this)" onmouseover="setCursor(this)" class="white" id="b3"></div>
+        <div onclick="clicked(this)" onmouseover="setCursor(this)" class="black" id="c3"></div>
+        <div onclick="clicked(this)" onmouseover="setCursor(this)" class="white" id="d3"></div>
+        <div onclick="clicked(this)" onmouseover="setCursor(this)" class="black" id="e3"></div>
+        <div onclick="clicked(this)" onmouseover="setCursor(this)" class="white" id="f3"></div>
+        <div onclick="clicked(this)" onmouseover="setCursor(this)" class="black" id="g3"></div>
+        <div onclick="clicked(this)" onmouseover="setCursor(this)" class="white" id="h3"></div>
+        <!-- 7th -->
+        <div onclick="clicked(this)" onmouseover="setCursor(this)" class="white" id="a2"></div>
+        <div onclick="clicked(this)" onmouseover="setCursor(this)" class="black" id="b2"></div>
+        <div onclick="clicked(this)" onmouseover="setCursor(this)" class="white" id="c2"></div>
+        <div onclick="clicked(this)" onmouseover="setCursor(this)" class="black" id="d2"></div>
+        <div onclick="clicked(this)" onmouseover="setCursor(this)" class="white" id="e2"></div>
+        <div onclick="clicked(this)" onmouseover="setCursor(this)" class="black" id="f2"></div>
+        <div onclick="clicked(this)" onmouseover="setCursor(this)" class="white" id="g2"></div>
+        <div onclick="clicked(this)" onmouseover="setCursor(this)" class="black" id="h2"></div>
+        <!-- 8th -->
+        <div onclick="clicked(this)" onmouseover="setCursor(this)" class="black" id="a1"></div>
+        <div onclick="clicked(this)" onmouseover="setCursor(this)" class="white" id="b1"></div>
+        <div onclick="clicked(this)" onmouseover="setCursor(this)" class="black" id="c1"></div>
+        <div onclick="clicked(this)" onmouseover="setCursor(this)" class="white" id="d1"></div>
+        <div onclick="clicked(this)" onmouseover="setCursor(this)" class="black" id="e1"></div>
+        <div onclick="clicked(this)" onmouseover="setCursor(this)" class="white" id="f1"></div>
+        <div onclick="clicked(this)" onmouseover="setCursor(this)" class="black" id="g1"></div>
+        <div onclick="clicked(this)" onmouseover="setCursor(this)" class="white" id="h1"></div>
+    </div>
+
+    <div class="upgrades" id="upgrades" display="none">
+        <div onclick="promote(this)" class="selection" id="n">&#9816;</div>
+        <div onclick="promote(this)" class="selection" id="b">&#9815;</div>
+        <div onclick="promote(this)" class="selection" id="r">&#9814;</div>
+        <div onclick="promote(this)" class="selection" id="q">&#9813;</div>
+    </div>
+    <div class="descriptions" id="pieceNames" display="none">
+        <div class="description">KNIGHT</div>
+        <div class="description">BISHOP</div>
+        <div class="description">ROOK</div>
+        <div class="description">QUEEN</div>
+    </div>
+
+    <h2 id="turnLabel">WHITE TURN</h2>
+    <h3 id="thinkingLabel" display="none">THINKING</h3>
+    <h3 id="alertLabel" display="none">CHECK</h3>
+    <h4 onclick="restartGame()" id="restart" display="none">RESET</h4>
+
+    <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
+    <script src="https://code.jquery.com/jquery-3.3.1.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/lodash.js/3.4.0/lodash.js"></script>
+    <script src="js/main.js"></script>
+    </body>
+</html>

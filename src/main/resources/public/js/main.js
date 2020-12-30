@@ -38,7 +38,7 @@ window.onresize = function(){ location.reload(); }
 $(document).ready(function () {
     if ($(window).width() <= 600) {
         var cw = $('.chessboard').width();
-        $('.chessboard').css({'height':cw+'px'});
+        $('.chessboard').css({'height':cw+2+'px'});
     }
     setupDeselect();
     resetGraphics();

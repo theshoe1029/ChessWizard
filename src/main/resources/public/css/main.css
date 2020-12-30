@@ -90,7 +90,7 @@ h1, #thinkingLabel, #turnLabel {
 	color: #ff0000;
 }
 
-#restart{
+#restart, #start, #retry {
 	color: #ababab;
 	cursor: pointer;
 }

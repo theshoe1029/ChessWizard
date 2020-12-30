@@ -39,7 +39,7 @@ public class UCI {
                 else CHESS_WIZARD.board.move(new Move(cmd[cmd.length - 1]));
                 System.out.println(CHESS_WIZARD.board);
             } else if (token.equals("go")) {
-                System.out.println("bestmove " + CHESS_WIZARD.getBestMove());
+                System.out.println("bestmove " + CHESS_WIZARD.getBestMove(true));
             } else if (token.equals("ponderhit")) {
                 // the user has played the expected move.
             } else if (token.equals("stop")) {

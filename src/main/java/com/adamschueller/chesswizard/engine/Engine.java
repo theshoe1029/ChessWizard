@@ -26,7 +26,7 @@ public class Engine {
     //position fen R3K3/8/8/8/8/8/8/1q6 w KQkq - 0 1
     //en passant
     //position fen 8/8/8/8/1p6/8/P7/8 w KQkq - 0 1
-    public Move getBestMove() {
+    public Move getBestMove(boolean shouldPrint) {
         PriorityQueue<Move> bestMoves = new PriorityQueue<>();
         double bestScore = board.getTurn() == Color.WHITE ? Double.NEGATIVE_INFINITY : Double.POSITIVE_INFINITY;
         Move bestGameMove = null;
@@ -37,8 +37,7 @@ public class Engine {
                 Piece prevEnd = board.move(move);
                 double score = scoreGraph(board, 4);
                 board.undo(prevEnd, move, castleState, enPassant);
-                System.out.println(board);
-                //System.out.println("info currmove " + move + " currmovenumber " + nMove + " score cp " + score);
+                if (shouldPrint) System.out.println("info currmove " + move + " score cp " + score);
                 if ((board.getTurn() == Color.WHITE && score > bestScore)
                         || (board.getTurn() == Color.BLACK && score < bestScore)) {
                     bestScore = score;
@@ -46,7 +45,7 @@ public class Engine {
                 }
             }
         }
-        System.out.println("info pv " + bestGameMove);
+        if (shouldPrint) System.out.println("info pv " + bestGameMove);
         return bestGameMove;
     }
 

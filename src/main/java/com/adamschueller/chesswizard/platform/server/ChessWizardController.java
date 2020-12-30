@@ -5,6 +5,7 @@ import com.adamschueller.chesswizard.engine.Engine;
 import com.adamschueller.chesswizard.engine.move.Castle;
 import com.adamschueller.chesswizard.engine.move.Move;
 import com.adamschueller.chesswizard.engine.move.Promotion;
+import com.adamschueller.chesswizard.engine.pieces.Color;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import org.springframework.boot.jackson.JsonComponent;
@@ -19,12 +20,28 @@ import org.springframework.web.server.ResponseStatusException;
 import org.springframework.web.servlet.ModelAndView;
 
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.UUID;
 
 @Controller
 public class ChessWizardController {
-    Map<String, Game> games = new HashMap<>();
+    private static final long TIMEOUT = 60_000;
+    private static Map<String, Game> games = new HashMap<>();
+
+    public static void clearInactiveGames() {
+        Iterator<Entry<String, Game> > iterator = games.entrySet().iterator();
+        while (iterator.hasNext()) {
+            Map.Entry<String, Game> entry = iterator.next();
+            Game game = entry.getValue();
+            long lastMoveTime = System.currentTimeMillis() - game.lastMove;
+            if (lastMoveTime > TIMEOUT) {
+                System.out.println(entry.getKey() + " timed out");
+                iterator.remove();
+            }
+        }
+    }
 
     @GetMapping("/")
     public ModelAndView index() {
@@ -37,7 +54,8 @@ public class ChessWizardController {
         UUID uuid = UUID.randomUUID();
         Game game = new Game();
         games.put(uuid.toString(), game);
-        return new StartResponse(uuid, game.engine.board);
+        System.out.println(uuid.toString() + " connected");
+        return new StartResponse(uuid, game.engine.board, game.playerColor);
     }
 
     @ResponseBody
@@ -45,7 +63,22 @@ public class ChessWizardController {
     public RestartResponse restart(@RequestBody RestartRequest restartRequest) {
         Game game = new Game();
         games.replace(restartRequest.uuid, game);
-        return new RestartResponse(game.engine.board);
+        return new RestartResponse(game.engine.board, game.playerColor);
+    }
+
+    @ResponseBody
+    @RequestMapping(value="/get", method=RequestMethod.POST)
+    public GetResponse get(@RequestBody GetRequest getRequest) {
+        try {
+            Game game = games.get(getRequest.uuid);
+            synchronized (game) {
+                return new GetResponse(game.engine.board, game.playerColor);
+            }
+        }
+        catch (NullPointerException exc) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST,
+                    "Game with uuid " + getRequest.uuid + " not found");
+        }
     }
 
     @ResponseBody
@@ -90,12 +123,15 @@ public class ChessWizardController {
     @RequestMapping(value="/go", method=RequestMethod.POST)
     public GoResponse go(@RequestBody GoRequest goRequest) {
         try {
-            Engine engine = games.get(goRequest.uuid).engine;
+            Game game = games.get(goRequest.uuid);
+            Engine engine = game.engine;
             Board board = engine.board;
 
-            board.move(engine.getBestMove());
-            board.updateGameOver();
-            return new GoResponse(board);
+            synchronized (game) {
+                board.move(engine.getBestMove(false));
+                board.updateGameOver();
+                return new GoResponse(board);
+            }
         }
         catch (NullPointerException exc) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST,
@@ -119,6 +155,7 @@ public class ChessWizardController {
     static class StartResponse {
         @Getter UUID uuid;
         @Getter Board board;
+        @Getter Color playerColor;
     }
 
     @JsonComponent
@@ -129,6 +166,18 @@ public class ChessWizardController {
     @AllArgsConstructor
     static class RestartResponse {
         @Getter Board board;
+        @Getter Color playerColor;
+    }
+
+    @JsonComponent
+    static class GetRequest {
+        @Getter String uuid;
+    }
+
+    @AllArgsConstructor
+    static class GetResponse {
+        @Getter Board board;
+        @Getter Color playerColor;
     }
 
     @JsonComponent

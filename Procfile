@@ -1,1 +1,1 @@
-web: java -jar target/ChessWizard-1.0-SNAPSHOT.jar server
+web: java -Dserver.port=$PORT -jar target/ChessWizard-1.0-SNAPSHOT.jar server

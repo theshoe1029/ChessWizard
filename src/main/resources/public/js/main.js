@@ -18,11 +18,15 @@ const turnLabel = document.getElementById("turnLabel");
 const thinkingLabel = document.getElementById("thinkingLabel");
 const alertLabel = document.getElementById("alertLabel");
 const restart = document.getElementById("restart");
+const start = document.getElementById("start");
+const retry = document.getElementById("retry");
 
 const PVP_MODE = false;
-var uuid;
 var board;
 var turn;
+var dots;
+var retryCallback;
+var serverDisconnected = true;
 var botTurn = false;
 var gameOver = false;
 var startPos = null;
@@ -32,7 +36,8 @@ var promotion = "";
 $(document).ready(function () {
     setupDeselect();
     resetGraphics();
-    startGame();
+    if (getCookie("uuid") === "") startGame();
+    else getGame();
 });
 
 function setupDeselect() {
@@ -55,6 +60,8 @@ function resetGraphics() {
     pieceNames.style.display = "none";
     alertLabel.style.display = "none";
     restart.style.display = "none";
+    start.style.display = "none";
+    retry.style.display = "none";
 }
 
 function updateBoard(serverBoard) {
@@ -81,6 +88,32 @@ function updateBoard(serverBoard) {
 function updateTurn(serverBoard) {
     turnLabel.innerHTML = serverBoard.turn + " TURN";
     turn = serverBoard.turn;
+}
+
+function updateBoardColor(color) {
+    if (color === "WHITE") playerWhiteBoard();
+    else {
+        playerBlackBoard();
+        botMove();
+    }
+}
+
+function playerWhiteBoard() {
+    for (var x = 0; x < 8; x++) {
+        for (var y = 0; y < 8; y++) {
+            var boardSquare = document.getElementById(numToLetter(7 - y) + (7 - x + 1));
+            boardSquare.id = numToLetter(y) + (x + 1);
+        }
+    }
+}
+
+function playerBlackBoard() {
+    for (var x = 0; x < 8; x++) {
+        for (var y = 0; y < 8; y++) {
+            var boardSquare = document.getElementById(numToLetter(y) + (x + 1));
+            boardSquare.id = numToLetter(7 - y) + (7 - x + 1);
+        }
+    }
 }
 
 function drawBoard() {
@@ -217,8 +250,48 @@ function isValidPiece(square) {
     }
 }
 
+function setCookie(name, value, days) {
+    var d = new Date();
+    d.setTime(d.getTime() + (days*24*60*60*1000));
+    var expires = "expires="+ d.toUTCString();
+    document.cookie = name + "=" + value + ";" + expires + ";";
+}
+
+function getCookie(cookieName) {
+    var name = cookieName + "=";
+    var decodedCookie = decodeURIComponent(document.cookie);
+    var ca = decodedCookie.split(';');
+    for(var i = 0; i < ca.length; i++) {
+        var c = ca[i];
+        while (c.charAt(0) == ' ') {
+            c = c.substring(1);
+        }
+        if (c.indexOf(name) == 0) {
+            return c.substring(name.length, c.length);
+        }
+    }
+    return "";
+}
+
+function clicked(square) {
+    if (!gameOver && !botTurn && !serverDisconnected) {
+        var pos = square.id;
+        if (startPos == null && isValidPiece(square) && square.innerHTML !== "") {
+            setStartPos(square, pos);
+        } else if (startPos === pos) {
+            clearStartPos();
+        } else if (startPos != null && isValidPiece(square) && square.innerHTML !== "") {
+            clearStartPos();
+            setStartPos(square, pos);
+        } else if (startPos != null) {
+            endPos = pos;
+            validate();
+        }
+    }
+}
+
 function setCursor(square) {
-    if (((square.innerHTML === "" || !isValidPiece(square)) && startPos == null) || gameOver || botTurn)
+    if (((square.innerHTML === "" || !isValidPiece(square)) && startPos == null) || gameOver || botTurn || serverDisconnected)
         square.style.cursor = "default";
     else
         square.style.cursor = "pointer";
@@ -238,6 +311,17 @@ function clearStartPos() {
     }
 }
 
+function displayThinkingMessage(message) {
+    thinkingLabel.style.display = "block";
+    thinkingLabel.innerHTML = message;
+    var i = 0;
+    dots = setInterval(() => {
+        if (i % 6 === 0) thinkingLabel.innerHTML = message;
+        else thinkingLabel.innerHTML += ".";
+        i++;
+    }, 1000);
+}
+
 function startGame() {
     axios({
         method: 'post',
@@ -245,11 +329,12 @@ function startGame() {
         data: {}
     })
         .then(res => {
-            uuid = res.data.uuid;
-            updateBoard(res.data.board);
+            handleServerConnect();
+            setCookie("uuid", res.data.uuid, 1);
             resetGraphics();
-        })
-        .catch(err => console.log(err));
+            updateBoardColor(res.data.playerColor);
+            updateBoard(res.data.board);
+        }).catch(getErrHandler(startGame));
 }
 
 function restartGame() {
@@ -257,32 +342,35 @@ function restartGame() {
         method: 'post',
         url: '/restart',
         data: {
-            "uuid": uuid
+            "uuid": getCookie("uuid")
         }
     })
         .then(res => {
+            handleServerConnect();
             gameOver = false;
-            updateBoard(res.data.board);
             resetGraphics();
-        })
-        .catch(err => console.log(err));
+            updateBoardColor(res.data.playerColor);
+            updateBoard(res.data.board);
+        }).catch(getErrHandler(restartGame));
 }
 
-function clicked(square) {
-    if (!gameOver && !botTurn) {
-        var pos = square.id;
-        if (startPos == null && isValidPiece(square) && square.innerHTML !== "") {
-            setStartPos(square, pos);
-        } else if (startPos === pos) {
-            clearStartPos();
-        } else if (startPos != null && isValidPiece(square) && square.innerHTML !== "") {
-            clearStartPos();
-            setStartPos(square, pos);
-        } else if (startPos != null) {
-            endPos = pos;
-            validate();
+function getGame() {
+    displayThinkingMessage("LOADING");
+    axios({
+        method: 'post',
+        url: '/get',
+        data: {
+            "uuid": getCookie("uuid")
         }
-    }
+    })
+        .then(res => {
+            handleServerConnect();
+            thinkingLabel.style.display = "none";
+            clearInterval(dots);
+            resetGraphics();
+            updateBoardColor(res.data.playerColor);
+            updateBoard(res.data.board);
+        }).catch(getErrHandler(getGame));
 }
 
 function validate() {
@@ -290,11 +378,12 @@ function validate() {
         method: 'post',
         url: '/validate',
         data: {
-            "uuid": uuid,
+            "uuid": getCookie("uuid"),
             "move": startPos + endPos
         }
     })
         .then(res => {
+            handleServerConnect();
             if (res.data.valid === true) {
                 alertLabel.style.display = "none";
                 if (res.data.promotion) showPromotion();
@@ -304,8 +393,7 @@ function validate() {
                 alertLabel.style.display = "block";
                 clearStartPos();
             }
-        })
-        .catch(err => console.log(err));
+        }).catch(getErrHandler(validate));
 }
 
 function playerMove() {
@@ -313,39 +401,70 @@ function playerMove() {
         method: 'post',
         url: '/move',
         data: {
-            "uuid": uuid,
+            "uuid": getCookie("uuid"),
             "move": startPos + endPos + promotion
         }
     })
         .then(res => {
+            handleServerConnect();
             updateBoard(res.data.board);
             clearStartPos();
             if (!PVP_MODE) botMove();
-        })
-        .catch(err => console.log(err));
+        }).catch(getErrHandler(playerMove));
 }
 
 function botMove() {
     botTurn = true;
-    thinkingLabel.style.display = "block";
-    thinkingLabel.innerHTML = "THINKING";
-    var i = 0;
-    var dots = setInterval(() => {
-        if (i % 6 === 0) thinkingLabel.innerHTML = "THINKING"
-        else thinkingLabel.innerHTML += ".";
-        i++;
-    }, 1000)
-
+    displayThinkingMessage("THINKING");
     axios({
         method: 'post',
         url: '/go',
-        data: {"uuid": uuid}
+        data: {
+            "uuid": getCookie("uuid")
+        }
     })
         .then(res => {
-            botTurn = false;
+            handleServerConnect();
             thinkingLabel.style.display = "none";
-            updateBoard(res.data.board);
             clearInterval(dots);
-        })
-        .catch(err => console.log(err))
+            botTurn = false;
+            updateBoard(res.data.board);
+        }).catch(getErrHandler(botMove));
+}
+
+function getErrHandler(callback) {
+    return err => {
+        if (err.response) handleInvalidId();
+        else if (err.request) handleServerDisconnect(callback);
+    }
+}
+
+function handleServerConnect() {
+    serverDisconnected = false;
+    alertLabel.style.display = "none";
+    retry.style.display = "none";
+}
+
+function handleServerDisconnect(callback) {
+    serverDisconnected = true;
+    retryCallback = callback;
+    alertLabel.innerHTML = "SERVER DISCONNECTED";
+    alertLabel.style.display = "block";
+    retry.style.display = "block";
+    if (dots !== undefined) {
+        thinkingLabel.style.display = "none";
+        clearInterval(dots);
+    }
+}
+
+function handleInvalidId() {
+    handleServerConnect();
+    setCookie("uuid", "", 1);
+    alertLabel.innerHTML = "INVALID GAME ID";
+    alertLabel.style.display = "block";
+    start.style.display = "block";
+    if (dots !== undefined) {
+        thinkingLabel.style.display = "none";
+        clearInterval(dots);
+    }
 }

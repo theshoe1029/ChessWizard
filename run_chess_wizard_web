@@ -1,0 +1,1 @@
+java -jar ./out/artifacts/ChessWizard/ChessWizard.jar server

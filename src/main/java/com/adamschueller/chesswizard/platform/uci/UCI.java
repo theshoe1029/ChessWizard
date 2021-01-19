@@ -37,7 +37,6 @@ public class UCI {
                 if (cmd[1].equals("startpos")) CHESS_WIZARD.board = (new Board());
                 else if (cmd[1].equals("fen")) CHESS_WIZARD.board = (new Board(new Board.FEN(cmd)));
                 else CHESS_WIZARD.board.move(new Move(cmd[cmd.length - 1]));
-                System.out.println(CHESS_WIZARD.board);
             } else if (token.equals("go")) {
                 System.out.println("bestmove " + CHESS_WIZARD.getBestMove(true));
             } else if (token.equals("ponderhit")) {

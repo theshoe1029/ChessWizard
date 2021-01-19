@@ -107,7 +107,8 @@ function updateBoardColor(game) {
 }
 
 function updateRecord(game) {
-    console.log(game.record);
+    document.getElementById("wins").innerHTML = game.record[0] == 1 ? "1 WIN" : game.record[0] + " WINS";
+    document.getElementById("losses").innerHTML = game.record[1] == 1 ? "1 LOSS" : game.record[0] + " LOSSES";
 }
 
 function playerWhiteBoard() {

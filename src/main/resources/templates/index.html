@@ -1,15 +1,15 @@
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
-    <link rel="icon" href="favicon.png"/>
+    <link rel="icon" href="img/favicon.png"/>
     <link rel="stylesheet" href="css/main.css"/>
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
     <meta charset="UTF-8">
-    <title>Chess</title>
+    <title>Chess Wizard</title>
 </head>
 
 <body id="body">
-    <h1 id="header">CHESS</h1>
-    <p id="game"></p>
+    <div id="winsAndLosses">CHESS WIZARD RECORD<br><span id="wins"></span><span id="losses"></span></div>
+    <div id="bannerContainer"><img id="bannerImg" src="img/banner.png"></div>
 
     <div class="chessboard" id="chessboard">
         <!-- 1st -->
@@ -106,9 +106,9 @@
     <h4 onclick="startGame()" id="start" display="none">RESTART</h4>
     <h4 onclick="retryCallback()" id="retry" display="none">RETRY</h4>
 
-    <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
-    <script src="https://code.jquery.com/jquery-3.3.1.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/lodash.js/3.4.0/lodash.js"></script>
+    <script src="js/axios.min.js"></script>
+    <script src="js/jquery.min.js"></script>
+    <script src="js/lodash.js"></script>
     <script src="js/main.js"></script>
     </body>
 </html>

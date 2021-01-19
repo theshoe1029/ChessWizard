@@ -9,17 +9,43 @@
     font-style: normal;
 }
 
+body {
+    margin: 0;
+}
+
+#bannerContainer {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+#bannerImg {
+    margin-top: 5px;
+    margin-bottom: 5px;
+}
+
+#winsAndLosses {
+    font-family: VCR,Courier New,Courier,Lucida Sans Typewriter,Lucida Typewriter,monospace;
+    font-weight: normal;
+    font-style: normal;
+    font-size: 12pt;
+    position: absolute;
+    bottom: 25;
+    right: 15;
+    text-align: right;
+}
+
 h1, h2, h3, h4 {
 	text-align: center;
 	font-family: VCR,Courier New,Courier,Lucida Sans Typewriter,Lucida Typewriter,monospace;
 	font-weight: normal;
 	font-style: normal;
-	font-size: 14pt;
+	font-size: 12pt;
 }
 
 h2, h3, h4 {
-    margin-top: 15px;
-    margin-bottom: 15px;
+    margin-top: 5px;
+    margin-bottom: 5px;
 }
 
 .chessboard {	
@@ -81,11 +107,7 @@ h2, h3, h4 {
     vertical-align:middle;
 }
 
-#turnLabel {
-    margin-top: 15px;
-}
-
-h1, #thinkingLabel, #turnLabel {
+h1, #thinkingLabel, #turnLabel, #winsAndLosses {
 	color: #ababab;
 }
 
@@ -98,6 +120,14 @@ h1, #thinkingLabel, #turnLabel {
 	cursor: pointer;
 }
 
+#winsAndLosses {
+    font-size: 12px;
+}
+
+#wins {
+    margin-right: 15px;
+}
+
 @media only screen and (max-width: 600px) {
     h1 {
         margin-top: 10%;
@@ -106,6 +136,15 @@ h1, #thinkingLabel, #turnLabel {
 
     h1, h2, h3, h4, .description {
         font-size: 12px;
+    }
+
+    #bannerContainer {
+        margin-top: 15px;
+        margin-bottom: 15px;
+    }
+
+    #bannerImg {
+        width: 50%;
     }
 
     .chessboard {

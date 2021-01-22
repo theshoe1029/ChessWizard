@@ -97,7 +97,7 @@ function updateTurn(serverBoard) {
     turn = serverBoard.turn;
 }
 
-function updateBoardColor(game) {
+function initBoardColor(game) {
     const color = game.playerColor;
     if (color === "WHITE") playerWhiteBoard();
     else {
@@ -345,7 +345,7 @@ function startGame() {
             handleServerConnect();
             setCookie("uuid", res.data.uuid, 1);
             resetGraphics();
-            updateBoardColor(res.data.game);
+            initBoardColor(res.data.game);
             updateBoard(res.data.game);
             updateRecord(res.data.game);
         }).catch(getErrHandler(startGame));
@@ -363,7 +363,7 @@ function restartGame() {
             handleServerConnect();
             gameOver = false;
             resetGraphics();
-            updateBoardColor(res.data.game);
+            initBoardColor(res.data.game);
             updateBoard(res.data.game);
             updateRecord(res.data.game);
         }).catch(getErrHandler(restartGame));
@@ -383,10 +383,9 @@ function getGame() {
             thinkingLabel.style.display = "none";
             clearInterval(dots);
             resetGraphics();
-            updateBoardColor(res.data.game);
+            res.data.game.playerColor === "WHITE" ? playerWhiteBoard() : playerBlackBoard();
             updateBoard(res.data.game);
             updateRecord(res.data.game);
-            if (res.data.game.board.turn !== res.data.game.playerTurn) botMove();
         }).catch(getErrHandler(getGame));
 }
 

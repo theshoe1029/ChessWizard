@@ -138,6 +138,10 @@ h1, #thinkingLabel, #turnLabel, #winsAndLosses {
         font-size: 12px;
     }
 
+    #winsAndLosses {
+        font-size: 10px;
+    }
+
     #bannerContainer {
         margin-top: 15px;
         margin-bottom: 15px;

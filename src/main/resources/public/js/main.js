@@ -386,6 +386,7 @@ function getGame() {
             updateBoardColor(res.data.game);
             updateBoard(res.data.game);
             updateRecord(res.data.game);
+            if (res.data.game.board.turn !== res.data.game.playerTurn) botMove();
         }).catch(getErrHandler(getGame));
 }
 
